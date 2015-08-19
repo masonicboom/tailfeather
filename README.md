@@ -1,6 +1,6 @@
 Tailfeather is a command line tool for intelligently pretty-printing log files.
 
-It colors repeated values within each field consistently, recycling colors as needed when novel values are encountered. This aids the eye in seeing patterns and anomalies, when tailing live logs.
+It colors repeated values within each field consistently (recycling colors as needed). When tailing live logs, this helps you see patterns and anomalies.
 
 ## Screenshots
 
