@@ -12,13 +12,17 @@ It colors repeated values within each field consistently, recycling colors as ne
 
 ![After](https://raw.githubusercontent.com/masonicboom/tailfeather/master/after.png)
 
+## System Requirements
+
+Should build on any system with [Go](http://golang.org).
+
 ## Dependencies
 
   https://github.com/daviddengcn/go-colortext
 
 ## Building
 
-Install dependencies, then run `make`.
+Install dependencies (see [go get]( https://golang.org/cmd/go/#hdr-Download_and_install_packages_and_dependencies) documentation), then run `make`.
 
 ## Usage
 
