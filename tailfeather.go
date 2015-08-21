@@ -44,16 +44,18 @@ const maxValues = 7
 
 // Each Field is effectively a FIFO queue of color indices.
 type Field struct {
-	ValueIndex map[string]int    // Map from value to its index; used to determine color of a value.
-	Values     [maxValues]string // Map from index to its value; used to evict old values from the ValueIndex.
-	NextIndex  int               // The next index to evict.
+	ValueIndex         map[string]int    // Map from value to its index; used to determine color of a value.
+	Values             [maxValues]string // Map from index to its value; used to evict old values from the ValueIndex.
+	NextIndex          int               // The next index to evict.
+	PrevDisplayedColor ct.Color          // The previously-displayed color; used to avoid repetition.
 }
 
 func NewField() *Field {
 	return &Field{
-		ValueIndex: make(map[string]int),
-		Values:     [maxValues]string{},
-		NextIndex:  0,
+		ValueIndex:         make(map[string]int),
+		Values:             [maxValues]string{},
+		NextIndex:          0,
+		PrevDisplayedColor: colors[len(colors)-1], // This is just chosen to not be the first color.
 	}
 }
 
@@ -99,11 +101,19 @@ func main() {
 			// Determine the color index of the current field value,
 			// if it has been seen before.
 			vi, ok := f.ValueIndex[v]
+			c := colors[vi]
 
 			// When a novel value is encountered, choose its color
 			// by putting it in the FIFO queue for this field.
 			if !ok {
 				vi = f.NextIndex
+				c = colors[vi]
+
+				// Avoid repeating the last color used.
+				if c == f.PrevDisplayedColor {
+					vi = (f.NextIndex + 1) % maxValues
+					c = colors[vi]
+				}
 
 				// Evict previous value, if necessary.
 				prevValue := f.Values[vi]
@@ -116,8 +126,15 @@ func main() {
 			}
 
 			// Print the value in the appropriate color.
-			ct.ChangeColor(colors[vi], false, ct.None, false)
+			ct.ChangeColor(c, false, ct.None, false)
 			fmt.Print(v)
+
+			// Record the color that was used, to avoid repetition.
+			// If a new color is cycled in on the next row, it is
+			// possible to repeat the same color that was shown on
+			// this row, if that color is "up to bat". Recording
+			// the current color lets us handle that case.
+			f.PrevDisplayedColor = c
 
 			// Follow the value with the outputDelimiter, if there are more fields.
 			if fi < numFields-1 {
